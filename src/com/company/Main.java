@@ -3,6 +3,11 @@ package com.company;
 public class Main {
 
     public static void main(String[] args) {
+//        testArray();
+        testDoubledLinkedList();
+    }
+
+    private static void testArray() {
         Array<Integer> array = new Array<>();
         array.add(5);
         array.add(2);
@@ -29,5 +34,19 @@ public class Main {
         array.remove(-10);
         System.out.println(array);
         System.out.println("===========================");
+    }
+
+    private static void testDoubledLinkedList() {
+        DoublyLinkedList<DummyPojo> list = new DoublyLinkedList<>();
+        DummyPojo dPojo = new DummyPojo(0, "name 0");
+        list.add(dPojo);
+        list.add(new DummyPojo(1, "name 1"));
+        list.add(new DummyPojo(2, "name 2"));
+        list.add(new DummyPojo(3, "name 3"));
+        list.add(new DummyPojo(4, "name 4"));
+        list.add(dPojo);
+        System.out.println(list);
+        System.out.println("===========================");
+        System.out.println("index of dPojo: " + list.indexOf(dPojo));
     }
 }

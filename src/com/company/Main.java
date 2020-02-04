@@ -4,7 +4,8 @@ public class Main {
 
     public static void main(String[] args) {
 //        testArray();
-        testDoubledLinkedList();
+//        testDoubledLinkedList();
+        testArrayQueue();
     }
 
     private static void testArray() {
@@ -48,5 +49,30 @@ public class Main {
         System.out.println(list);
         System.out.println("===========================");
         System.out.println("index of dPojo: " + list.indexOf(dPojo));
+    }
+
+    private static void testArrayQueue() {
+        QueueWithArray<Integer> queue = new QueueWithArray<>(5);
+        queue.enqueue(0);
+        queue.enqueue(1);
+        queue.enqueue(2);
+        queue.enqueue(3);
+        queue.enqueue(4);
+        System.out.println(queue);
+        System.out.println("===========================");
+        queue.dequeue();
+        queue.dequeue();
+        queue.dequeue();
+        System.out.println(queue);
+        System.out.println("===========================");
+        queue.enqueue(5);
+        queue.enqueue(6);
+        queue.enqueue(7);
+        System.out.println(queue);
+        System.out.println("===========================");
+        queue.enqueue(8);
+        queue.enqueue(9);
+        System.out.println(queue);
+        System.out.println("===========================");
     }
 }

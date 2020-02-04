@@ -52,6 +52,10 @@ public class Queue<T> implements Iterable<T> {
         return list.remove(obj);
     }
 
+    public boolean contains(Object obj) {
+        return list.contains(obj);
+    }
+
     @Override
     public Iterator<T> iterator() {
         return list.iterator();

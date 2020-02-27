@@ -47,7 +47,7 @@ public class PQueue<T extends Comparable<T>> {
     //Priority queue construction, O(nlog(n))
     public PQueue(Collection<T> elements) {
         this(elements.size());
-        for(T elem: elements) {
+        for (T elem : elements) {
             add(elem);
         }
     }
@@ -125,23 +125,23 @@ public class PQueue<T extends Comparable<T>> {
     private void swim(int k) {
         //Take the index of the next parent node WRT to k
         // NOTE: heap start index is 0. If it is 1 then (k/2)
-        int parent = (k-1) / 2;
+        int parent = (k - 1) / 2;
 
-        while(k > 0 && less(k, parent)) {
+        while (k > 0 && less(k, parent)) {
             //change k with parent
             swap(parent, k);
             k = parent;
 
             //Grab the index of the next parent node WRT to k
-            parent = (k-1) / 2;
+            parent = (k - 1) / 2;
         }
     }
 
     //Top down node sink, O(log(n))
     private void sink(int k) {
         while (true) {
-            int left = (2*k) + 1;  // Left node
-            int right = (2*k) + 2;  // Right node
+            int left = (2 * k) + 1;  // Left node
+            int right = (2 * k) + 2;  // Right node
             int smallest = left;  // Assume left is the smallest node of the two children
 
             //Find which is smaller left or right
@@ -152,7 +152,7 @@ public class PQueue<T extends Comparable<T>> {
 
             //Stop if we are outside the bounds of the tree
             //or stop early if we cannot sink k anymore
-            if (left >= heapSize || less(right, left)) {
+            if (left >= heapSize || less(k, smallest)) {
                 break;
             }
 
@@ -176,6 +176,9 @@ public class PQueue<T extends Comparable<T>> {
     //Removes a particular element in the heap, O(log(n))
     public boolean remove(T element) {
         if (element == null) return false;
+        //Logarithmic removal with map, O(log(n))
+        Integer index = mapGet(element);
+        if (index != null) removeAt(index);
         //Linear removal
 //        for (int i = 0; i < heapSize; i++) {
 //            if (element.equals(heap.get(i))) {
@@ -183,14 +186,12 @@ public class PQueue<T extends Comparable<T>> {
 //                return true;
 //            }
 //        }
-        //Logarithmic removal with map, O(log(n))
-        Integer index = mapGet(element);
-        if (index != null) removeAt(index);
         return false;
     }
 
     private T removeAt(int i) {
         if (isEmpty()) return null;
+
         heapSize--;
         T removeData = heap.get(i);
         swap(i, heapSize);
@@ -200,6 +201,89 @@ public class PQueue<T extends Comparable<T>> {
         mapRemove(removeData, heapSize);
 
         //Remove last element
-        if
+        if (i == heapSize) return removeData;
+
+        T elem = heap.get(i);
+
+        int parent = (i - 1) / 2; //Parent node
+
+        //Check if we need to swim() or sink()
+        if (i > 0 && less(i, parent)) {
+            swim(i);
+        } else {
+            sink(i);
+        }
+
+        return removeData;
+    }
+
+    //Recursively checks if this heap is a min heap
+    //This method is just for testing purposes to make sure
+    //that heap invariant is still being maintained
+    //Call with k = 0 to start at the root
+    public boolean isMinHeap(int k) {
+        //if we are outside of the bounds of the heap return true
+        if (k >= heapSize) return true;
+
+        int left = (2 * k) + 1;
+        int right = (2 * k) + 2;
+
+        //Make sure that the current node k is less than
+        //both of its children if they exist, otherwise return false to indicate
+        //an invalid heap
+        if (left < heapSize && !less(k, left)) return false;
+        if (right < heapSize && !less(k, right)) return false;
+
+        //Recurse on both children to make sure they are also valid heaps
+        return isMinHeap(left) && isMinHeap(right);
+    }
+
+    //Add a node value and its index to the map
+    private void mapAdd(T value, int index) {
+        TreeSet<Integer> set = map.get(value);
+
+        //Check if we need to insert new value or add to existing set
+        if (set == null) {
+            set = new TreeSet<>();
+            set.add(index);
+            map.put(value, set);
+        } else {
+            set.add(index);
+        }
+    }
+
+    //Remove the index at a given value, O(log(n))
+    private void mapRemove(T value, int index) {
+        TreeSet<Integer> set = map.get(value);
+        if (set != null) {
+            set.remove(index); //TreeSet take O(log(n)) removal time
+            if (set.size() == 0) map.remove(value);
+        }
+    }
+
+    //Extract an index position for given value
+    //NOTE: If a value exists multiple times in the heap the highest
+    //index is returned (this has arbitrarily been chosen)
+    private Integer mapGet(T value) {
+        TreeSet<Integer> set = map.get(value);
+        if (set != null)  return set.last();
+        return null;
+    }
+
+    //Exchange the index of two nodes internally within the map
+    private void mapSwap(T val1, T val2, int val1Index, int val2Index) {
+        Set<Integer> set1 = map.get(val1);
+        Set<Integer> set2 = map.get(val2);
+
+        set1.remove(val1Index);
+        set2.remove(val2Index);
+
+        set1.add(val2Index);
+        set2.add(val1Index);
+    }
+
+    @Override
+    public String toString() {
+        return heap.toString();
     }
 }
